@@ -19,6 +19,15 @@ knitr::opts_chunk$set(
 #' * [download zip](http://github.com/manmatej/2022_MEB_myClim_workshop/archive/master.zip)  
 #' * [clone from GitHub](https://github.com/manmatej/2022_MEB_myClim_workshop)   
 #' 
+## ----eval=FALSE---------------------------------------------------------------------------------------
+## ## Set working directory to downloaded folder (unzipped)
+## path<-paste0(Sys.getenv("userprofile"),"\\downloads\\")
+## setwd(paste0(path,"2022_MEB_myClim_workshop-main"))
+## 
+## # setwd("C:/Users/#####/downloads/2022_MEB_myClim_workshop-main/") # edit
+## 
+
+#' 
 #' 
 #' 
 #' ## myClim 
