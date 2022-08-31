@@ -1,7 +1,7 @@
 # check dependencies and install if necessary
 requiered_packages <- c("stringr", "lubridate", "tibble", "dplyr", "purrr",
                         "ggplot2", "ggforce", "viridis", "runner", "rmarkdown",
-                        "knitr", "kableExtra", "tidyr")
+                        "knitr", "kableExtra", "tidyr","plotly")
 missing_packages <- requiered_packages[!(requiered_packages %in% installed.packages()[,"Package"])]
 if(length(missing_packages)) install.packages(missing_packages)
 
@@ -25,6 +25,7 @@ library(myClim)
 tms.f <- mc_read_files(c("data_91184101_0.csv","data_94184102_0.csv",
                          "data_94184103_0.csv"), dataformat_name="TOMST"
                        ,silent = T)
+
 # read from HOBO files
 hob.f <- mc_read_files(c("20024354_comma.csv"), 
                        dataformat_name="HOBO",
@@ -159,7 +160,7 @@ joined_data <- mc_join(data, comp_sensors=c("TMS_T1", "TMS_T2"))
 rm(list=setdiff(ls(), c("tms","hob.f"))) # environment cleaning
 
 ## lines
-# mc_plot_line(tms.load,filename = "lines.png",
+# mc_plot_line(tms,filename = "lines.png",
 #              sensors = c("TMS_T3","TMS_TMSmoisture"),png_width = 2500)
 
 tms.plot <- mc_filter(tms,localities = "A6W79")
@@ -169,12 +170,12 @@ p <- p+ggplot2::scale_x_datetime(date_breaks = "1 week", date_labels = "%W")
 p <- p+ggplot2::xlab("week")
 p <- p+ggplot2::aes(size=sensor_name)
 p <- p+ggplot2::scale_size_manual(values = c(1,1,2))
-p <- p+ggplot2::guides(size = FALSE)
+p <- p+ggplot2::guides(size = "none")
 p <- p+ggplot2::scale_color_manual(values=c("hotpink","pink", "darkblue"),name=NULL)
 
 
 ## raster
-# mc_plot_raster(tms.load,filename = "raster.png",
+# mc_plot_raster(tms,filename = "raster.png",
 #                 sensors = c("TMS_T3","TM_T"),png_width = 2500,png_height = 500)
 mc_plot_raster(tms,filename = "raster.pdf",sensors = c("TMS_T3","TM_T"))
 
@@ -191,6 +192,12 @@ tms.day <- mc_agg(tms, fun=c("mean","range","coverage","percentile"),
 # aggregate all time-series, return one value per sensor.
 tms.all <- mc_agg(tms, fun=c("mean","range","coverage","percentile"),
                 percentiles = 95, period = "all")
+
+# aggregate with your custom function. (how many records above 30°C per month)
+tms.all.custom <- mc_agg(tms, fun=list(TMS_T3="below5"),period = "month",
+                         custom_functions = list(below5=function(x){length(x[x<(-5)])}))
+mc_info(tms.all.custom)
+r<-mc_reshape_long(tms.all.custom)
 
 
 ## calculate virtual sensor VWC from raw Tomst moisture
