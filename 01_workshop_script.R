@@ -65,7 +65,6 @@ tms.m <- mc_read_data(files_table = "files_table.csv",
 tms <- mc_prep_clean(tms.m) # clean series
 mc_info_clean(tms) # call cleaning log
 
-
 tms <- mc_prep_solar_tz(tms) # calculate solar time
 mc_info_meta(tms) # call metadata info
 
@@ -111,7 +110,6 @@ tms.m<-mc_filter(tms.m,sensors = c("TMS_T2","TMS_T3"),reverse = F) # keep only t
 mc_info(tms.m)
 
 ## update metadata -------------------------
-
 metadata<-readRDS("metadata.rds") # load  data frame with metadata (coordinates)
 tms.f<-mc_prep_meta_locality(tms.f, values=metadata) # update metadata from data.frame
 
@@ -126,8 +124,8 @@ rm(list=setdiff(ls(), c("tms","hob.f")))
 
 ## lines------------------------------------------------------------------
 tms.plot <- mc_filter(tms,localities = "A6W79") # prepare data for plotting (select one locality)
-
 p <- mc_plot_line(tms.plot,filename = "lines.pdf",sensors = c("TMS_T3","TMS_T1","TMS_TMSmoisture"))
+p
 
 # you can play with ggplot object yourself
 p <- p+ggplot2::scale_x_datetime(date_breaks = "1 week", date_labels = "%W")
@@ -143,7 +141,6 @@ mc_plot_raster(tms,filename = "raster.pdf",sensors = c("TMS_T3","TM_T"))
 
 
 ## aggregation in time ==================================================
-
 # aggregate to daily mean, range, coverage, and 95 percentile. 
 tms.day <- mc_agg(tms, fun=c("mean","range","coverage","percentile"),
                 percentiles = 95, period = "day")
@@ -162,11 +159,11 @@ r<-mc_reshape_long(tms.all.custom)
 ## calculate microclimatic variables (virtual sensors) ===============================
 
 # Volumetric Water Content from raw TOMST raw moisture ------------------------------
-tms.calc <- mc_calc_vwc(tms.day,soiltype = "loamy sand A")
+tms.calc <- mc_calc_vwc(tms,soiltype = "loamy sand A")
 # mc_data_vwc_parameters() # see for soil selection (sand, loam, peat....)
 
 ## virtual sensor with growing and freezing degree days -----------------------------
-tms.calc <- mc_calc_gdd(tms.calc,sensor = "TMS_T3",)
+tms.calc <- mc_calc_gdd(tms.calc,sensor = "TMS_T3")
 tms.calc <- mc_calc_fdd(tms.calc,sensor = "TMS_T3")
 # mc_plot_line(tms.calc,"gdd.pdf",sensors = c("GDD5","TMS_T3"))
 
