@@ -58,7 +58,7 @@ lt<-read.table("localities_table.csv",sep=",",header = T)
 
 tms.m <- mc_read_data(files_table = "files_table.csv",
                       localities_table =lt,
-                      silent = T)
+                      silent = T,clean = F)
 
 
 ## Time zones & calibration ========================================
@@ -162,7 +162,7 @@ r<-mc_reshape_long(tms.all.custom)
 ## calculate microclimatic variables (virtual sensors) ===============================
 
 # Volumetric Water Content from raw TOMST raw moisture ------------------------------
-tms.calc <- mc_calc_vwc(tms.ag,soiltype = "loamy sand A")
+tms.calc <- mc_calc_vwc(tms.day,soiltype = "loamy sand A")
 # mc_data_vwc_parameters() # see for soil selection (sand, loam, peat....)
 
 ## virtual sensor with growing and freezing degree days -----------------------------
